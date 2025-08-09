@@ -6,15 +6,18 @@ public class PlayerInputs : MonoBehaviour
 {
     [SerializeField] private float _moveSpeed;
     private Vector2 _moveDirection;
+    private Vector2 _jumpDirection;
+    [SerializeField] private float jumpHeight;
+    [SerializeField] private float gravity;
     private Vector2 _rotateDirection;
     [SerializeField] private float _rotationSpeed;
-    
+    [SerializeField] private Rigidbody rb;
     private bool _isSprinting;
 
     // Update is called once per frame
     void Update()
     {
-        transform.position += new Vector3(_moveDirection.x, 0, _moveDirection.y) *
+        rb.linearVelocity += new Vector3(_moveDirection.x, _jumpDirection.x, _moveDirection.y) *
                               (Time.deltaTime * _moveSpeed * (_isSprinting ? 1.5f : 1));
     }
     
@@ -24,6 +27,12 @@ public class PlayerInputs : MonoBehaviour
     {
         // Get the input value out of my input action
         _moveDirection = input.Get<Vector2>().normalized;
+    }
+
+    public void OnJump(InputValue input)
+    {
+        _jumpDirection.x = jumpHeight;
+        gravity = 0;
     }
 
     public void OnSprint(InputValue input)
@@ -37,29 +46,31 @@ public class PlayerInputs : MonoBehaviour
         print("BANG BANG! you ded");
     }
 
-    public void OnInspect(InputValue input)
-    {
-        _rotateDirection = input.Get<Vector2>();
+    #region Inspect
+    //public void OnInspect(InputValue input)
+    //{
+    //    _rotateDirection = input.Get<Vector2>();
 
-        Vector2 xAndY = new Vector2(0, 0);
-        
-        if (_rotateDirection.x >= 1 || _rotateDirection.x <= -1)
-        {
-            Debug.Log("moving one direction");
-            xAndY.x = _rotateDirection.x;
+    //    Vector2 xAndY = new Vector2(0, 0);
 
-        }
+    //    if (_rotateDirection.x >= 1 || _rotateDirection.x <= -1)
+    //    {
+    //        Debug.Log("moving one direction");
+    //        xAndY.x = _rotateDirection.x;
 
-        if (_rotateDirection.y >= 1 || _rotateDirection.y <= -1)
-        {
-            xAndY.y = _rotateDirection.y;
-        }
-        transform.Rotate(-xAndY.x, 0, -xAndY.y, Space.World);
-    }
+    //    }
+
+    //    if (_rotateDirection.y >= 1 || _rotateDirection.y <= -1)
+    //    {
+    //        xAndY.y = _rotateDirection.y;
+    //    }
+    //    transform.Rotate(-xAndY.x, 0, -xAndY.y, Space.World);
+    //}
+    #endregion
     // SendMessages Inputs will send with an InputValue object representing the player's input
 
-    
-    
+
+
     // Invoke UnityEvent version:
     public void MoveEvent(InputAction.CallbackContext context)
     {
