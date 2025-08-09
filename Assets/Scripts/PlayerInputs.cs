@@ -1,4 +1,5 @@
 using System;
+using UnityEditor.Timeline;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,19 +7,44 @@ public class PlayerInputs : MonoBehaviour
 {
     [SerializeField] private float _moveSpeed;
     private Vector2 _moveDirection;
-    private Vector2 _jumpDirection;
     [SerializeField] private float jumpHeight;
     [SerializeField] private float gravity;
-    private Vector2 _rotateDirection;
-    [SerializeField] private float _rotationSpeed;
     [SerializeField] private Rigidbody rb;
     private bool _isSprinting;
+
+    public bool jumpPressed;
+    public bool jumpJustPressed;
+
+    public GameObject facingDirection;
 
     // Update is called once per frame
     void Update()
     {
-        rb.linearVelocity += new Vector3(_moveDirection.x, _jumpDirection.x, _moveDirection.y) *
+        Vector3 move = new Vector3(_moveDirection.x, 0, _moveDirection.y) *
                               (Time.deltaTime * _moveSpeed * (_isSprinting ? 1.5f : 1));
+
+        move = facingDirection.transform.TransformDirection(move);
+
+        rb.linearVelocity += move;
+
+        
+
+
+        if (jumpJustPressed)
+        {
+            rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpHeight, rb.linearVelocity.z);
+            jumpJustPressed = false;
+        }
+
+        if (transform.position.y > 1)
+        {
+            jumpHeight = rb.linearVelocity.y - gravity * Time.deltaTime;
+        }
+        else if(transform.position.y == 1)
+        {
+            jumpHeight = 5;
+        }
+
     }
     
 
@@ -31,8 +57,12 @@ public class PlayerInputs : MonoBehaviour
 
     public void OnJump(InputValue input)
     {
-        _jumpDirection.x = jumpHeight;
-        gravity = 0;
+        bool isPressedNow = input.isPressed;
+
+
+        // jumpJustPressed is true exactly on the frame the button transitions from up to down
+        jumpJustPressed = isPressedNow && !jumpPressed;
+        jumpPressed = isPressedNow;
     }
 
     public void OnSprint(InputValue input)
@@ -67,6 +97,7 @@ public class PlayerInputs : MonoBehaviour
     //    transform.Rotate(-xAndY.x, 0, -xAndY.y, Space.World);
     //}
     #endregion
+    #region extra
     // SendMessages Inputs will send with an InputValue object representing the player's input
 
 
@@ -111,4 +142,5 @@ public class PlayerInputs : MonoBehaviour
                 break;
         }
     }
+    #endregion
 }
