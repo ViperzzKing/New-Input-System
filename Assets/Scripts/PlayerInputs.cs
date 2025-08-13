@@ -8,7 +8,7 @@ public class PlayerInputs : MonoBehaviour
     private Vector2 _moveDirection;
     private Vector2 _rotateDirection;
     [SerializeField] private float _rotationSpeed;
-    
+
     private bool _isSprinting;
 
     // Update is called once per frame
@@ -37,7 +37,7 @@ public class PlayerInputs : MonoBehaviour
         print("BANG BANG! you ded");
     }
 
-    public void OnInspect(InputValue input)
+    /*public void OnInspect(InputValue input)
     {
         _rotateDirection = input.Get<Vector2>();
 
@@ -55,7 +55,7 @@ public class PlayerInputs : MonoBehaviour
             xAndY.y = _rotateDirection.y;
         }
         transform.Rotate(-xAndY.x, 0, -xAndY.y, Space.World);
-    }
+    }*/
     // SendMessages Inputs will send with an InputValue object representing the player's input
 
     
